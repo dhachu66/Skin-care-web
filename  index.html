@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Skin Routine">
+<title>Skin Routine</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0A0A0A;
+  --s1:#111111;
+  --s2:#1A1A1A;
+  --s3:#222222;
+  --b1:rgba(255,255,255,0.07);
+  --b2:rgba(255,255,255,0.12);
+  --b3:rgba(255,255,255,0.2);
+  --t1:#FFFFFF;
+  --t2:#999999;
+  --t3:#555555;
+  --acc:#FFFFFF;
+  --gold:#C8A96E;
+  --r:16px;
+  --rsm:10px;
+}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--t1);}
+
+/* APP SHELL */
+.app{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;}
+
+/* HEADER */
+.hdr{background:var(--bg);border-bottom:1px solid var(--b1);flex-shrink:0;padding:env(safe-area-inset-top,44px) 20px 0;}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 0 14px;}
+.hdr-label{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:4px;}
+.hdr-day{font-size:32px;font-weight:700;letter-spacing:-.8px;line-height:1;color:var(--t1);}
+.hdr-date{font-size:13px;color:var(--t2);margin-top:5px;font-weight:400;}
+.hdr-badge{display:inline-flex;align-items:center;padding:5px 13px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1px solid;}
+.badge-tret{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2);color:#fff;}
+.badge-mask{background:rgba(200,169,110,.1);border-color:rgba(200,169,110,.35);color:var(--gold);}
+.badge-rest{background:transparent;border-color:var(--b2);color:var(--t3);}
+
+/* TABS */
+.tabs{background:var(--bg);border-bottom:1px solid var(--b1);flex-shrink:0;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:13px 18px;border:none;background:none;color:var(--t3);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;position:relative;white-space:nowrap;transition:color .2s;}
+.tab.on{color:var(--t1);font-weight:600;}
+.tab.on::after{content:'';position:absolute;bottom:0;left:18px;right:18px;height:2px;background:var(--t1);border-radius:2px 2px 0 0;}
+
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 16px 60px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* SCREENS */
+.scr{display:none;animation:fadeUp .22s ease;}
+.scr.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* SECTION LABEL */
+.sl{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin:20px 0 10px 2px;}
+.sl:first-child{margin-top:0;}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:18px;margin-bottom:10px;}
+.card-line{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+
+/* STEP */
+.step{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--b1);}
+.step:last-child{border-bottom:none;padding-bottom:0;}
+.step:first-child{padding-top:0;}
+.step-n{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;background:var(--s2);border:1px solid var(--b2);color:var(--t2);}
+.step-n.acc{background:var(--t1);color:var(--bg);border-color:var(--t1);}
+.step-n.warn{background:rgba(200,169,110,.12);border-color:rgba(200,169,110,.4);color:var(--gold);}
+.step-t{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:3px;line-height:1.3;}
+.step-d{font-size:13px;color:var(--t2);line-height:1.6;}
+
+/* ALERT */
+.alert{border-radius:var(--rsm);padding:12px 14px;font-size:13px;line-height:1.55;margin-bottom:10px;border:1px solid;}
+.a-w{background:rgba(200,169,110,.07);border-color:rgba(200,169,110,.25);color:#C8A96E;}
+.a-n{background:rgba(255,255,255,.04);border-color:var(--b2);color:var(--t2);}
+.a-d{background:rgba(255,80,80,.06);border-color:rgba(255,80,80,.2);color:#FF8080;}
+.a-g{background:rgba(100,200,130,.06);border-color:rgba(100,200,130,.2);color:#6DC88A;}
+
+/* DAY CARD */
+.dc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+.dc.today{border-color:rgba(255,255,255,.3);}
+.dc-h{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b1);}
+.dc-name{font-size:15px;font-weight:700;color:var(--t1);}
+.dc-today-tag{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin-left:8px;}
+.dc-b{padding:14px 18px;}
+.dc-row{display:flex;gap:10px;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--b1);font-size:13px;color:var(--t2);line-height:1.5;}
+.dc-row:last-child{border-bottom:none;padding-bottom:0;}
+.dc-dot{width:5px;height:5px;border-radius:50%;background:var(--t3);margin-top:8px;flex-shrink:0;}
+.dc-dot.w{background:var(--t1);}
+.dc-dot.g{background:var(--gold);}
+
+/* PHASE CARD */
+.ph{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px 18px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
+.ph-tag{font-size:10px;font-weight:800;letter-spacing:.08em;padding:6px 10px;border-radius:8px;text-align:center;flex-shrink:0;min-width:48px;}
+.bar{background:var(--s3);border-radius:3px;height:2px;margin-top:12px;overflow:hidden;}
+.bar-f{height:100%;border-radius:3px;background:var(--t1);}
+
+/* RULE ROW */
+.rr{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--b1);font-size:13px;color:var(--t2);line-height:1.4;}
+.rr:last-child{border-bottom:none;}
+.ri{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.ri-n{background:rgba(255,80,80,.1);color:#FF8080;border:1px solid rgba(255,80,80,.2);}
+.ri-y{background:rgba(100,200,130,.1);color:#6DC88A;border:1px solid rgba(100,200,130,.2);}
+
+/* SUPP */
+.sc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px 18px;margin-bottom:10px;display:flex;gap:14px;align-items:center;}
+.si{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;background:var(--s2);border:1px solid var(--b1);}
+
+/* SHOP */
+.sh{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rsm);padding:13px 16px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.sh-n{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.sh-w{font-size:11px;color:var(--t3);}
+.price{background:var(--s2);border:1px solid var(--b2);color:var(--t2);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;}
+
+/* TIMELINE */
+.tl{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--b1);}
+.tl:last-child{border-bottom:none;}
+.tl-d{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+
+/* DIVIDER */
+.div{height:1px;background:var(--b1);margin:4px 0 16px;}
+
+/* STAT BAR */
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--b1);}
+.stat-row:last-child{border-bottom:none;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-top">
+      <div>
+        <div class="hdr-label">Daily Skin Routine</div>
+        <div class="hdr-day" id="h-day">—</div>
+        <div class="hdr-date" id="h-date">—</div>
+        <div style="margin-top:10px;" id="h-badge"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="go('today')">Today</button>
+    <button class="tab" onclick="go('morning')">Morning</button>
+    <button class="tab" onclick="go('night')">Tonight</button>
+    <button class="tab" onclick="go('week')">Week</button>
+    <button class="tab" onclick="go('tret')">Tretinoin</button>
+    <button class="tab" onclick="go('more')">More</button>
+  </div>
+
+  <!-- SCROLL -->
+  <div class="scroll">
+
+    <!-- TODAY -->
+    <div class="scr on" id="scr-today"><div id="tc"></div></div>
+
+    <!-- MORNING -->
+    <div class="scr" id="scr-morning">
+      <div class="alert a-d">Step 5 — Sunscreen is mandatory. Never skip. Tretinoin makes skin sun sensitive.</div>
+      <div class="card"><div id="ms"></div></div>
+    </div>
+
+    <!-- NIGHT -->
+    <div class="scr" id="scr-night"><div id="nc"></div></div>
+
+    <!-- WEEK -->
+    <div class="scr" id="scr-week"><div id="wc"></div></div>
+
+    <!-- TRETINOIN -->
+    <div class="scr" id="scr-tret">
+      <div class="sl">Timing guide</div>
+      <div class="ph">
+        <div class="ph-tag" style="background:rgba(100,200,130,.08);border:1px solid rgba(100,200,130,.2);color:#6DC88A;">W1–2</div>
+        <div style="flex:1;">
+          <div class="step-t">Leave 1 hour only</div>
+          <div class="step-d">Apply → leave 1 hour → rinse with plain cold water (no face wash) → apply Hydro Boost gel again → sleep.</div>
+          <div class="bar"><div class="bar-f" style="width:25%;background:#6DC88A;"></div></div>
+        </div>
+      </div>
+      <div class="ph">
+        <div class="ph-tag" style="background:rgba(255,255,255,.05);border:1px solid var(--b2);color:var(--t2);">W3–4</div>
+        <div style="flex:1;">
+          <div class="step-t">Leave 2–3 hours</div>
+          <div class="step-d">Apply → wait 2–3 hours → rinse with plain cold water → apply Hydro Boost gel again → sleep.</div>
+          <div class="bar"><div class="bar-f" style="width:55%;background:var(--t2);"></div></div>
+        </div>
+      </div>
+      <div class="ph">
+        <div class="ph-tag" style="background:rgba(255,255,255,.1);border:1px solid var(--b3);color:#fff;">M2+</div>
+        <div style="flex:1;">
+          <div class="step-t">Leave whole night</div>
+          <div class="step-d">Apply → sleep with it on → do not rinse → wash off in morning with salicylic face wash as normal.</div>
+          <div class="bar"><div class="bar-f" style="width:100%;"></div></div>
+        </div>
+      </div>
+
+      <div class="sl">Golden rules</div>
+      <div class="card">
+        <div class="rr"><div class="ri ri-n">✕</div>Never apply on damp skin — wait full 30 mins after washing</div>
+        <div class="rr"><div class="ri ri-n">✕</div>Never use more than pea size — more means irritation not results</div>
+        <div class="rr"><div class="ri ri-n">✕</div>Never use on mask nights — Tuesday and Saturday</div>
+        <div class="rr"><div class="ri ri-n">✕</div>Never skip sunscreen next morning — non negotiable</div>
+        <div class="rr"><div class="ri ri-y">✓</div>Always moisturize BEFORE applying Tretinoin</div>
+        <div class="rr"><div class="ri ri-y">✓</div>Always use cold water only on your face</div>
+        <div class="rr"><div class="ri ri-y">✓</div>Only 3 nights per week for first 2 months — Mon, Wed, Fri</div>
+      </div>
+
+      <div class="alert a-d">Severe burning, extreme peeling or swelling — rinse immediately, skip 2–3 nights. See a dermatologist if it continues.</div>
+      <div class="alert a-g">Mild dryness, slight flaking, minor redness in week 1–2 is completely normal. Skin is adjusting to Tretinoin.</div>
+    </div>
+
+    <!-- MORE -->
+    <div class="scr" id="scr-more">
+      <div class="sl">Daily supplements</div>
+      <div class="sc"><div class="si">💊</div><div><div class="step-t">After lunch</div><div class="step-d">Zinconia-50 (50mg) — 1 tablet only. With food and full glass of water. Never on empty stomach.</div></div></div>
+      <div class="sc"><div class="si">🫐</div><div><div class="step-t">After dinner</div><div class="step-d">Omega-3 (1000mg) + Vitamin E (400 IU) together with food. Both fat-soluble, absorb better with meal.</div></div></div>
+      <div class="sc"><div class="si">💧</div><div><div class="step-t">All day</div><div class="step-d">3 litres of water every single day. The single biggest skin changer.</div></div></div>
+
+      <div class="sl">Shopping list</div>
+      <div class="sh"><div><div class="sh-n">Foxtale 12% Niacinamide serum</div><div class="sh-w">Nykaa / Amazon</div></div><div class="price">₹528</div></div>
+      <div class="sh"><div><div class="sh-n">Neutrogena Hydro Boost gel</div><div class="sh-w">Apollo Pharmacy / Amazon</div></div><div class="price">₹599</div></div>
+      <div class="sh"><div><div class="sh-n">Tretinoin 0.025%</div><div class="sh-w">Apollo Pharmacy — prescription needed</div></div><div class="price">₹200</div></div>
+      <div class="sh"><div><div class="sh-n">Foxtale De-Tan Mask</div><div class="sh-w">Nykaa / Amazon / Zepto</div></div><div class="price">₹495</div></div>
+      <div class="sh"><div><div class="sh-n">mCaffeine Coffee Lip Scrub</div><div class="sh-w">Amazon / Nykaa</div></div><div class="price">₹249</div></div>
+      <div class="sh"><div><div class="sh-n">Laneige Lip Sleeping Mask</div><div class="sh-w">Nykaa</div></div><div class="price">₹1500</div></div>
+      <div class="sh"><div><div class="sh-n">Almond oil — Dabur</div><div class="sh-w">Any medical shop</div></div><div class="price">₹150</div></div>
+      <div class="sh"><div><div class="sh-n">Omega-3 1000mg</div><div class="sh-w">Apollo / Amazon / Healthkart</div></div><div class="price">₹500</div></div>
+      <div class="sh"><div><div class="sh-n">Vitamin E 400 IU — Evion</div><div class="sh-w">Apollo Pharmacy</div></div><div class="price">₹150</div></div>
+
+      <div class="sl">Results timeline</div>
+      <div class="card">
+        <div class="tl"><div class="tl-d" style="background:#6DC88A;"></div><div><div class="step-t" style="font-size:14px;">Week 1–2</div><div class="step-d">Mild dryness and flaking — completely normal. Skin is adjusting to Tretinoin.</div></div></div>
+        <div class="tl"><div class="tl-d" style="background:var(--t2);"></div><div><div class="step-t" style="font-size:14px;">Week 3–4</div><div class="step-d">Possible purging — bumps may surface. Stay consistent, do not stop the routine.</div></div></div>
+        <div class="tl"><div class="tl-d" style="background:var(--gold);"></div><div><div class="step-t" style="font-size:14px;">Month 2</div><div class="step-d">Bumps clearly reducing. Skin texture becoming smoother. Pores tightening.</div></div></div>
+        <div class="tl"><div class="tl-d" style="background:var(--t1);"></div><div><div class="step-t" style="font-size:14px;">Month 3</div><div class="step-d">Pores visibly smaller. Natural glow appearing. Even skin tone forming.</div></div></div>
+        <div class="tl"><div class="tl-d" style="background:var(--gold);opacity:.6;"></div><div><div class="step-t" style="font-size:14px;">Month 4–6</div><div class="step-d">Clear, bright, even skin. Very close to your goal. 🌟</div></div></div>
+      </div>
+
+      <div style="text-align:center;padding:16px 0 8px;">
+        <div style="font-size:12px;color:var(--t3);letter-spacing:.04em;">PROGRESS PHOTO EVERY SUNDAY MORNING</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px;">Same spot · Same lighting · Same angle</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+const DD={
+  0:{label:'Rest Night',      bc:'badge-rest', nt:'rest',     lips:'Almond oil only',                  note:'Take your weekly progress photo this morning 📸'},
+  1:{label:'Tretinoin Night', bc:'badge-tret', nt:'tret',     lips:'mCaffeine lip scrub → almond oil',  note:''},
+  2:{label:'Mask Night',      bc:'badge-mask', nt:'mask-tue', lips:'Almond oil only',                  note:'Foxtale De-Tan mask tonight — 10 mins only'},
+  3:{label:'Tretinoin Night', bc:'badge-tret', nt:'tret',     lips:'Honey + sugar scrub → almond oil', note:''},
+  4:{label:'Rest Night',      bc:'badge-rest', nt:'rest',     lips:'Almond oil only',                  note:''},
+  5:{label:'Tretinoin Night', bc:'badge-tret', nt:'tret',     lips:'mCaffeine lip scrub → almond oil', note:''},
+  6:{label:'Mask Night',      bc:'badge-mask', nt:'mask-sat', lips:'Laneige lip sleeping mask overnight',note:'DIY Besan + turmeric mask tonight — 15 mins'},
+};
+
+const MS=[
+  {n:'01', acc:false, warn:false, t:'Salicylic face wash', d:'Cold water only. Massage gently 60 seconds in circular motion. Focus cheeks and nose. Pat completely dry — never rub.'},
+  {n:'02', acc:false, warn:false, t:'Chicnutrix Outshine serum', d:'Wait 2 mins after wash. Take 3–4 drops, pat gently all over face. Do not rub. Wait 2 mins to fully absorb.'},
+  {n:'03', acc:false, warn:false, t:'Foxtale 12% Niacinamide serum', d:'2–3 drops, pat gently. Focus on cheeks and nose where bumps are. Wait 2 mins to absorb.'},
+  {n:'04', acc:false, warn:false, t:'Neutrogena Hydro Boost gel', d:'Pea size only. Spread evenly with gentle upward strokes. Wait 2 mins before sunscreen.'},
+  {n:'05', acc:true,  warn:false, t:'Dr. Sheth\'s Sunscreen', d:'Generous amount. Cover face, neck and ears completely. Never skip — Tretinoin makes skin extremely sun sensitive.'},
+  {n:'06', acc:false, warn:false, t:'SPF lip balm', d:'Apply on lips every morning. Reapply every 2–3 hours if going outdoors.'},
+];
+
+function sHTML(s){
+  const cls = s.acc ? 'step-n acc' : s.warn ? 'step-n warn' : 'step-n';
+  return `<div class="step"><div class="${cls}">${s.n}</div><div><div class="step-t">${s.t}</div><div class="step-d">${s.d}</div></div></div>`;
+}
+
+function nightHTML(nt){
+  if(nt==='tret') return `
+    <div class="alert a-n">Tretinoin night — Monday, Wednesday, Friday only</div>
+    <div class="card">
+      ${sHTML({n:'01',t:'Salicylic face wash',d:'Same as morning. Extra gentle. Cold water only. Pat completely dry with a clean towel.'})}
+      ${sHTML({n:'⏱',t:'Wait full 30 minutes',d:'Face must be bone dry before Tretinoin. Eat dinner, check your phone. Do not rush this step.',warn:true})}
+      ${sHTML({n:'02',t:'Neutrogena Hydro Boost gel',d:'Apply before Tretinoin — this protects your skin barrier. Spread evenly, wait 5 mins.'})}
+      ${sHTML({n:'03',t:'Tretinoin 0.025%',d:'Pea size only. Dot on forehead, both cheeks, nose and chin. Spread very thinly and evenly. Avoid eyes, lips and nostrils completely. See Tretinoin tab for how long to leave.',acc:true})}
+      ${sHTML({n:'04',t:'Almond oil on lips',d:'Apply generously. Massage gently for 1 minute before sleep.'})}
+    </div>`;
+  if(nt==='mask-tue') return `
+    <div class="alert a-w">Mask night — Foxtale De-Tan mask. 10 minutes maximum.</div>
+    <div class="card">
+      ${sHTML({n:'01',t:'Salicylic face wash',d:'Gentle wash, cold water, pat completely dry.'})}
+      ${sHTML({n:'02',t:'Foxtale De-Tan Mask',d:'Apply even layer, avoid eyes and lips. Set timer — 10 mins only. Rinse with cold water gently.',acc:true})}
+      ${sHTML({n:'03',t:'Chicnutrix Outshine serum',d:'3–4 drops, pat gently all over face.'})}
+      ${sHTML({n:'04',t:'Foxtale Niacinamide serum',d:'2–3 drops, pat gently. Wait 2 mins.'})}
+      ${sHTML({n:'05',t:'Neutrogena Hydro Boost gel',d:'Seal everything in. Spread evenly all over face.'})}
+      ${sHTML({n:'06',t:'Almond oil on lips',d:'Apply generously every night.'})}
+    </div>`;
+  if(nt==='mask-sat') return `
+    <div class="alert a-w">Mask night — DIY Besan + Turmeric. 15 minutes.</div>
+    <div class="alert a-n" style="font-size:12px;">Recipe: 1 tbsp besan + pinch turmeric + 1 tbsp curd + few drops rose water → mix into smooth paste</div>
+    <div class="card">
+      ${sHTML({n:'01',t:'Salicylic face wash',d:'Gentle wash, cold water, pat completely dry.'})}
+      ${sHTML({n:'02',t:'DIY Besan Turmeric Mask',d:'Apply evenly, avoid eyes and lips. Set timer — 15 mins. Rinse with cold water gently.',acc:true})}
+      ${sHTML({n:'03',t:'Chicnutrix Outshine serum',d:'3–4 drops, pat gently all over face.'})}
+      ${sHTML({n:'04',t:'Foxtale Niacinamide serum',d:'2–3 drops, pat gently. Wait 2 mins.'})}
+      ${sHTML({n:'05',t:'Neutrogena Hydro Boost gel',d:'Seal everything in. Spread evenly.'})}
+      ${sHTML({n:'06',t:'Laneige Lip Sleeping Mask',d:'Apply generously on lips. Leave overnight — do not rinse off.',acc:true})}
+    </div>`;
+  return `
+    <div class="alert a-n">Rest night — skin recovery. No Tretinoin tonight.</div>
+    <div class="card">
+      ${sHTML({n:'01',t:'Salicylic face wash',d:'Gentle wash, cold water, pat completely dry.'})}
+      ${sHTML({n:'02',t:'Chicnutrix Outshine serum',d:'3–4 drops, pat gently. Wait 2 mins to absorb.'})}
+      ${sHTML({n:'03',t:'Foxtale Niacinamide serum',d:'2–3 drops, pat gently. Wait 2 mins.'})}
+      ${sHTML({n:'04',t:'Neutrogena Hydro Boost gel',d:'Pea size, spread evenly all over face.'})}
+      ${sHTML({n:'05',t:'Almond oil on lips',d:'Apply generously every single night without fail.'})}
+    </div>`;
+}
+
+function init(){
+  const now=new Date();
+  const dow=now.getDay();
+  const d=DD[dow];
+
+  document.getElementById('h-day').textContent=DAYS[dow];
+  document.getElementById('h-date').textContent=now.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).split(',').slice(1).join(',').trim();
+  document.getElementById('h-badge').innerHTML=`<span class="hdr-badge ${d.bc}">${d.label}</span>`;
+
+  // Morning steps
+  document.getElementById('ms').innerHTML=MS.map(sHTML).join('');
+
+  // Today
+  let t='';
+  if(d.note) t+=`<div class="alert a-w">${d.note}</div>`;
+
+  t+=`<div class="sl">Morning — 6 steps</div>
+  <div class="card">${MS.map(sHTML).join('')}</div>`;
+
+  t+=`<div class="sl">Tonight's routine</div>
+  ${nightHTML(d.nt)}`;
+
+  t+=`<div class="sl">Lips tonight</div>
+  <div class="card" style="padding:14px 18px;">
+    <div class="step-t" style="font-weight:500;font-size:14px;">${d.lips}</div>
+  </div>`;
+
+  t+=`<div class="sl">Supplements today</div>
+  <div class="card">
+    <div class="stat-row"><span style="font-size:13px;color:var(--t2);">After lunch</span><span style="font-size:13px;font-weight:600;color:var(--t1);">Zinconia-50 × 1</span></div>
+    <div class="stat-row"><span style="font-size:13px;color:var(--t2);">After dinner</span><span style="font-size:13px;font-weight:600;color:var(--t1);">Omega-3 + Vit E</span></div>
+    <div class="stat-row"><span style="font-size:13px;color:var(--t2);">All day</span><span style="font-size:13px;font-weight:600;color:var(--t1);">3L water</span></div>
+  </div>`;
+
+  document.getElementById('tc').innerHTML=t;
+
+  // Night tab
+  document.getElementById('nc').innerHTML=`<div class="sl" style="margin-top:0;">Tonight — ${DAYS[dow]}</div>${nightHTML(d.nt)}`;
+
+  // Weekly
+  const ntL={tret:'Tretinoin routine','mask-tue':'Foxtale De-Tan mask — 10 mins','mask-sat':'DIY Besan turmeric mask — 15 mins',rest:'Rest night — no Tretinoin'};
+  const bL={tret:'badge-tret','mask-tue':'badge-mask','mask-sat':'badge-mask',rest:'badge-rest'};
+  const bT={tret:'Tretinoin','mask-tue':'Mask','mask-sat':'Mask',rest:'Rest'};
+  let w='';
+  for(let i=0;i<7;i++){
+    const dd=DD[i];
+    const isT=i===dow;
+    w+=`<div class="dc${isT?' today':''}">
+      <div class="dc-h">
+        <div style="display:flex;align-items:center;">
+          <div class="dc-name">${DAYS[i]}</div>
+          ${isT?'<span class="dc-today-tag">TODAY</span>':''}
+        </div>
+        <span class="hdr-badge ${bL[dd.nt]}" style="font-size:9px;padding:3px 9px;">${bT[dd.nt]}</span>
+      </div>
+      <div class="dc-b">
+        <div class="dc-row"><div class="dc-dot"></div><div>Full morning routine — 6 steps</div></div>
+        <div class="dc-row"><div class="dc-dot${dd.nt==='tret'?' w':dd.nt.includes('mask')?' g':''}"></div><div>${ntL[dd.nt]}</div></div>
+        <div class="dc-row"><div class="dc-dot"></div><div>Lips: ${dd.lips}</div></div>
+      </div>
+    </div>`;
+  }
+  document.getElementById('wc').innerHTML=w;
+}
+
+function go(name){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('scr-'+name).classList.add('on');
+  const tabs=['today','morning','night','week','tret','more'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('on');
+  document.querySelector('.scroll').scrollTop=0;
+}
+
+init();
+</script>
+</body>
+</html>
